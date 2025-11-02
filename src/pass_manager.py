@@ -1,12 +1,6 @@
 
 from qiskit.transpiler import generate_preset_pass_manager  
-from qft_circuit import backend
 from qiskit.transpiler.basepasses import TransformationPass
-# from src.pass_manager import SimplifyAlternatingTripleCX
-
-
-# Create preset pass manager called pm: 
-# make the optimization level 3 and use the backend you got 
 
 
 # create a class to have a custom pass 
@@ -35,7 +29,7 @@ class SimplifyAlternatingTripleCX(TransformationPass):
 
                 # Find pattern CX(A,B), CX(B,A), CX(A,B) by checking target and control qubit of each CX gate 
                 # Check that the middle CX gate is the "flipped" version of the one before and the one after 
-                if c1 == c3 and t1 == t3 and c1 != c2 and t1 != t2 and c1 == t2 and t1 == c2:
+                if c1 == c3 and t1 == t3 and c1 == t2 and t1 == c2:
                     # Remove the first and third CX gates
                     dag.remove_op_node(n1)
                     dag.remove_op_node(n3)
@@ -54,11 +48,9 @@ class SimplifyAlternatingTripleCX(TransformationPass):
 
 
 # add custom pass after optimization stage 
-def createPassManager():
+def createPassManager(backend):
     pm = generate_preset_pass_manager(
         optimization_level=3, backend=backend
     )
     pm.optimization += [SimplifyAlternatingTripleCX()]
     return pm
-# transpiled = pm.run(qc)
-# transpiled.draw("mpl", idle_wires=False)
